@@ -33,17 +33,17 @@
 DirTree <- R6Class("DirTree",
 
     public = list(
-        initialize = function(dir = "plots") { private$startPlotDir(dir) },
-        enter = function(name = "") { private$enterPlotDir(name) },
-        get = function(name = "", extname = ".png") { private$getPlotFilename(name, extname) },
-        leave = function() { private$leavePlotDir() },
-        exit = function() { private$endPlotDir() }
+        initialize = function(dir = "plots")               { private$.start(dir) },
+        enter      = function(name = "")                   { private$.enter(name) },
+        get        = function(name = "", extname = ".png") { private$.get(name, extname) },
+        leave      = function()                            { private$.leave() },
+        exit       = function()                            { private$.end() }
     ),
 
     private = list(
         stack = data.frame(dir = character(), id = integer()),
 
-        startPlotDir = function(dir) {
+        .start = function(dir) {
             stopifnot(nrow(private$stack) == 0)
             stopifnot(length(dir) == 1)
             if (dir == "") {
@@ -53,11 +53,11 @@ DirTree <- R6Class("DirTree",
             }
             ensureDirectory(dir)
             private$stack <- data.frame(dir = dir, id = 0)
-            message("Plotting (in '", dir, "') ...")
+            message("DirTree started: '", dir, "'")
             return(invisible(NULL))
         },
 
-        enterPlotDir = function(name = "") {
+        .enter = function(name = "") {
             stopifnot(nrow(private$stack) > 0)
             n <- nrow(private$stack)
             private$stack$id[[n]] <- private$stack$id[[n]] + 1
@@ -68,14 +68,14 @@ DirTree <- R6Class("DirTree",
             return(invisible(NULL))
         },
 
-        leavePlotDir = function() {
+        .leave = function() {
             stopifnot(nrow(private$stack) > 1)
             n <- nrow(private$stack)
             private$stack <- private$stack[-n, ]
             return(invisible(NULL))
         },
 
-        getPlotFilename = function(name = "", extname = ".png") {
+        .get = function(name = "", extname = ".png") {
             stopifnot(nrow(private$stack) > 0)
             n <- nrow(private$stack)
             private$stack$id[[n]] <- private$stack$id[[n]] + 1
@@ -86,10 +86,10 @@ DirTree <- R6Class("DirTree",
                           extname))
         },
 
-        endPlotDir = function() {
+        .end = function() {
             stopifnot(nrow(private$stack) == 1)
             private$stack <- data.frame(dir = character(), id = integer())
-            message("Plotting done.")
+            message("DirTree done.")
             return(invisible(NULL))
         }
     )
