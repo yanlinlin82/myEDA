@@ -1,0 +1,18 @@
+Package: myEDA
+Title: R package provides daily used functions for EDA
+Version: 0.1-1
+Authors@R: person("Linlin", "Yan", email = "yanlinlin82@gmail.com", role = c("aut", "cre"))
+Description: In my daily work of data analysis in bioinformatics and genomics,
+    many often-used functions are taken together as an R package. Here goes the
+    package.
+Depends:
+    R (>= 3.1.0),
+    dplyr,
+    readr,
+    reshape2,
+    ggplot2,
+    R6
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 5.0.1
