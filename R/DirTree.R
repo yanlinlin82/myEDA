@@ -4,6 +4,10 @@
 #'
 #' @return no any return value. stop if any error.
 #'
+#' @seealso
+#'
+#'   Try 'example(DirTree, ask = FALSE)'
+#'
 #' @export DirTree
 #'
 #' @examples
@@ -12,14 +16,14 @@
 #'
 #'   dirTree$enter("foo")                    # create 'plots/01_foo/'
 #'     png(dirTree$get("rnorm10"))           # got    'plots/01_foo/01_rnorm10.png'
-#'     plot(rnorm(10))
+#'     plot(rnorm(10), ask = FALSE)
 #'     dev.off()
 #'   dirTree$leave()
 #'
 #'   dirTree$enter("bar")                    # create 'plots/02_bar/'
 #'     dirTree$enter("sub1")                 # create 'plots/02_bar/01_sub1/'
 #'       jpeg(dirTree$get("sin", ".jpg"))    # got    'plots/02_bar/01_sub1/01_sin.jpg'
-#'       plot(sin, 0, 2 * pi)
+#'       plot(sin, 0, 2 * pi, ask = FALSE)
 #'       dev.off()
 #'     dirTree$leave()
 #'     dirTree$enter("sub2")                 # create 'plots/02_bar/02_sub2/'
@@ -33,15 +37,17 @@
 DirTree <- R6Class("DirTree",
 
     public = list(
-        initialize = function(dir = "plots")               { private$.start(dir) },
-        enter      = function(name = "")                   { private$.enter(name) },
-        get        = function(name = "", extname = ".png") { private$.get(name, extname) },
-        leave      = function()                            { private$.leave() },
-        exit       = function()                            { private$.end() }
+        initialize = function(dir = "plots", verbose = TRUE) { private$verbose <- verbose; private$.start(dir) },
+        enter      = function(name = "")                     { private$.enter(name) },
+        get        = function(name = "", extname = ".png")   { private$.get(name, extname) },
+        leave      = function()                              { private$.leave() },
+        exit       = function()                              { private$.end() }
     ),
 
     private = list(
         stack = data.frame(dir = character(), id = integer()),
+
+		verbose = TRUE,
 
         .start = function(dir) {
             stopifnot(nrow(private$stack) == 0)
@@ -53,7 +59,9 @@ DirTree <- R6Class("DirTree",
             }
             ensureDirectory(dir)
             private$stack <- data.frame(dir = dir, id = 0)
-            message("DirTree started: '", dir, "'")
+			if (private$verbose) {
+				message("DirTree started: '", dir, "'")
+			}
             return(invisible(NULL))
         },
 
@@ -65,12 +73,18 @@ DirTree <- R6Class("DirTree",
             dir <- gsub("/*$", "", dir)
             private$stack <- rbind(private$stack, data.frame(dir = dir, id = 0))
             ensureDirectory(paste(private$stack$dir, collapse = "/"))
+			if (private$verbose) {
+				message("DirTree enter: '", paste(private$stack$dir, collapse = "/"), "'")
+			}
             return(invisible(NULL))
         },
 
         .leave = function() {
             stopifnot(nrow(private$stack) > 1)
             n <- nrow(private$stack)
+			if (private$verbose) {
+				message("DirTree leave: '", paste(private$stack$dir, collapse = "/"), "'")
+			}
             private$stack <- private$stack[-n, ]
             return(invisible(NULL))
         },
@@ -79,17 +93,23 @@ DirTree <- R6Class("DirTree",
             stopifnot(nrow(private$stack) > 0)
             n <- nrow(private$stack)
             private$stack$id[[n]] <- private$stack$id[[n]] + 1
-            return(paste0(paste0(private$stack$dir, collapse = "/"),
-                          "/",
-                          sprintf("%02d", private$stack$id[[n]]),
-                          ifelse(name == "", "", paste0("_", name)),
-                          extname))
+            filename <- paste0(paste0(private$stack$dir, collapse = "/"),
+							   "/",
+							   sprintf("%02d", private$stack$id[[n]]),
+							   ifelse(name == "", "", paste0("_", name)),
+							   extname)
+			if (private$verbose) {
+				message("DirTree got: '", filename, "'")
+			}
+			return(filename)
         },
 
         .end = function() {
             stopifnot(nrow(private$stack) == 1)
             private$stack <- data.frame(dir = character(), id = integer())
-            message("DirTree done.")
+			if (private$verbose) {
+				message("DirTree done.")
+			}
             return(invisible(NULL))
         }
     )

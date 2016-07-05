@@ -23,14 +23,14 @@ Manipulate directory tree.
 
   dirTree$enter("foo")                    # create 'plots/01_foo/'
     png(dirTree$get("rnorm10"))           # got    'plots/01_foo/01_rnorm10.png'
-    plot(rnorm(10))
+    plot(rnorm(10), ask = FALSE)
     dev.off()
   dirTree$leave()
 
   dirTree$enter("bar")                    # create 'plots/02_bar/'
     dirTree$enter("sub1")                 # create 'plots/02_bar/01_sub1/'
       jpeg(dirTree$get("sin", ".jpg"))    # got    'plots/02_bar/01_sub1/01_sin.jpg'
-      plot(sin, 0, 2 * pi)
+      plot(sin, 0, 2 * pi, ask = FALSE)
       dev.off()
     dirTree$leave()
     dirTree$enter("sub2")                 # create 'plots/02_bar/02_sub2/'
@@ -40,6 +40,9 @@ Manipulate directory tree.
   dirTree$leave()
 
   dirTree$exit()                          # safely exit
+}
+\seealso{
+Try 'example(DirTree, ask = FALSE)'
 }
 \keyword{datasets}
 
