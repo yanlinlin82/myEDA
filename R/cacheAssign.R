@@ -5,9 +5,7 @@
 #'
 #' @return the same value assigned to the variable
 #'
-#' @export cacheAssign
-#'
-
+#' @export
 cacheAssign <- function(x, value) {
 
 	varname <- as.character(substitute(x))
@@ -27,4 +25,15 @@ cacheAssign <- function(x, value) {
 		saveRDS(v, filename)
 	}
 	assign(varname, v, envir = parent.frame())
+}
+
+#' @rdname cacheAssign
+#' @export
+cacheLoad <- function(x) {
+
+    varname <- as.character(substitute(x))
+
+	cacheDirectory <- getOption("cacheDirectory", "cache/")
+
+    readRDS(paste0(cacheDirectory, "/", varname, ".rds"))
 }

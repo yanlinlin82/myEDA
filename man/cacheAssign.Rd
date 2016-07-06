@@ -2,9 +2,12 @@
 % Please edit documentation in R/cacheAssign.R
 \name{cacheAssign}
 \alias{cacheAssign}
+\alias{cacheLoad}
 \title{Assign with cache mechanism.}
 \usage{
 cacheAssign(x, value)
+
+cacheLoad(x)
 }
 \arguments{
 \item{x}{variable name}
