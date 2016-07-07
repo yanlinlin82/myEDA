@@ -2,6 +2,7 @@
 
 export(DirTree)
 export(browseColors)
+export(cacheExists)
 export(cachedAssign)
 export(ensureDirectory)
 export(loadCache)
