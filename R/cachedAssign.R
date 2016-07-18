@@ -63,7 +63,7 @@ loadCache <- function(x, force = FALSE) {
 
         assign(x, readRDS(paste0(cacheDirectory, "/", x, ".rds")), envir = parent.frame())
     } else {
-        x
+        get(x)
     }
 }
 
